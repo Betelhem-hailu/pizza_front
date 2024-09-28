@@ -4,6 +4,7 @@ import RoleForm from "./RoleForm";
 import RoleTable from "./RoleTable";
 import UserForm from "./UserForm";
 import UserTable from "./UserTable";
+import OrderTable from "./OrderTable";
 
 export {
     Header,
@@ -12,4 +13,5 @@ export {
     RoleForm,
     UserForm,
     UserTable,
+    OrderTable
 }

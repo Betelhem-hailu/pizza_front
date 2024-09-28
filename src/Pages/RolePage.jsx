@@ -8,9 +8,7 @@ import { getRoles } from '../slices/user.slice';
 const RolePage = () => {
   const [open, setOpen] = useState(false);
 
-//   const handleAddRole = (newRole) => {
-//     setRoles([...roles, { ...newRole, id: roles.length + 1, createdAt: new Date().toLocaleDateString(), isActive: true }]);
-//   };
+
 const {roles} = useSelector((state) => state.user);
 const dispatch = useDispatch();
 useEffect(()=>{

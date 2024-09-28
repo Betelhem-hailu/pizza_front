@@ -31,18 +31,14 @@ export default function RoleModal({ open, handleClose }) {
   const dispatch = useDispatch();
   const [roleName, setRoleName] = useState("");
   const [permissionState, setPermissionState] = useState({});
-
-  // Get permissions from Redux store
   const { permissions } = useSelector((state) => state.user);
 
-  // Fetch permissions when the modal opens
   useEffect(() => {
     if (open) {
       dispatch(getPermissions());
     }
   }, [open, dispatch]);
 
-  // Update the state when permissions are fetched from the backend
   useEffect(() => {
     if (permissions) {
       // Initialize permissions state based on available permissions

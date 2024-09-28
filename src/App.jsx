@@ -1,7 +1,7 @@
 
 // import { useState } from 'react';
 import './App.css'
-import { Login, Register, RolePage, UserPage } from './Pages';
+import { AddMenu, Login, OrderPage, Register, RolePage, UserPage } from './Pages';
 import { AdminLayout } from './Layout';
 import { Route, Routes } from 'react-router-dom';
 
@@ -26,6 +26,8 @@ function App() {
         
         <Route path="/dashboard/roles" element={<RolePage />} />
         <Route path="/dashboard/users" element={<UserPage />} />
+        <Route path="/dashboard/addmenu" element={<AddMenu />}/>
+        <Route path="/dashboard/orders" element={<OrderPage />} />
       </Routes>
   )
 }
