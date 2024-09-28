@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   TextField,
   Button,
@@ -10,6 +10,8 @@ import {
   Box,
   Grid,
 } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from "../slices/user.slice";
 
 const style = {
   position: "absolute",
@@ -25,7 +27,7 @@ const style = {
   borderRadius: "10px",
 };
 
-const UserForm = ({open, handleClose}) => {
+const UserForm = ({ open, handleClose }) => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -34,6 +36,14 @@ const UserForm = ({open, handleClose}) => {
     phoneNumber2: "",
     role: "",
   });
+  const dispatch = useDispatch();
+  const { roles } = useSelector((state) => state.user);
+
+  useEffect(() => {
+    if (open) {
+      dispatch(getRoles());
+    }
+  }, [open, dispatch]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -43,10 +53,16 @@ const UserForm = ({open, handleClose}) => {
     });
   };
 
-  // const handleSubmit = () => {
-  //   // Logic to handle form submission
-  //   console.log(formData);
-  // };
+  const handleSubmit = () => {
+    // dispatch(createRole({ roleName, permissionIds: selectedPermissionIds }))
+    // .unwrap()
+    // .then(() => {
+    // console.log("success");
+    // });
+
+    // Close the modal after submission
+    handleClose();
+  };
 
   return (
     <Modal
@@ -61,7 +77,7 @@ const UserForm = ({open, handleClose}) => {
           margin="normal"
           label="Name"
           name="name"
-          height= "30px"
+          height="30px"
           value={formData.name}
           onChange={handleChange}
         />
@@ -70,7 +86,7 @@ const UserForm = ({open, handleClose}) => {
           margin="normal"
           label="Email address"
           name="email"
-          height= "30px"
+          height="30px"
           value={formData.email}
           onChange={handleChange}
         />
@@ -79,7 +95,7 @@ const UserForm = ({open, handleClose}) => {
           margin="normal"
           label="Location"
           name="location"
-          height= "30px"
+          height="30px"
           value={formData.location}
           onChange={handleChange}
         />
@@ -88,7 +104,7 @@ const UserForm = ({open, handleClose}) => {
           margin="normal"
           label="Phone Number"
           name="phoneNumber1"
-          height= "30px"
+          height="30px"
           value={formData.phoneNumber1}
           onChange={handleChange}
         />
@@ -97,31 +113,44 @@ const UserForm = ({open, handleClose}) => {
           margin="normal"
           label="Phone Number"
           name="phoneNumber2"
-          height= "30px"
+          height="30px"
           value={formData.phoneNumber2}
           onChange={handleChange}
         />
-        <Grid container spacing={10} sx={{display: "flex", alignItems: "bottom"}}>
-        <Grid item xs={6}>
-        <FormControl fullWidth margin="normal">
-          <InputLabel>Select Role</InputLabel>
-          <Select name="role" value={formData.role} onChange={handleChange}>
-            <MenuItem value={"Admin"}>Admin</MenuItem>
-            <MenuItem value={"User"}>User</MenuItem>
-            <MenuItem value={"Manager"}>Manager</MenuItem>
-          </Select>
-        </FormControl>
-        </Grid>
-        <Grid item xs={6}>
-        <Button
-          variant="contained"
-          fullWidth
-          style={{ marginTop: "16px", height: "56px", backgroundColor: "#FF8100", boxShadow: "none" }}
-          onClick={handleClose}
+        <Grid
+          container
+          spacing={10}
+          sx={{ display: "flex", alignItems: "bottom" }}
         >
-          Add
-        </Button>
-        </Grid>
+          <Grid item xs={6}>
+            <FormControl fullWidth margin="normal">
+              <InputLabel>Select Role</InputLabel>
+              <Select name="role" value={formData.role} onChange={handleChange}>
+                {/* Dynamically render MenuItems based on roles from Redux store */}
+                {roles &&
+                  roles.map((role) => (
+                    <MenuItem key={role.id} value={role.name}>
+                      {role.name}
+                    </MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          </Grid>
+          <Grid item xs={6}>
+            <Button
+              variant="contained"
+              fullWidth
+              style={{
+                marginTop: "16px",
+                height: "56px",
+                backgroundColor: "#FF8100",
+                boxShadow: "none",
+              }}
+              onClick={handleSubmit}
+            >
+              Add
+            </Button>
+          </Grid>
         </Grid>
       </Box>
     </Modal>

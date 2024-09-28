@@ -3,13 +3,12 @@ import userService from "../services/user.service";
 
 export const register = createAsyncThunk(
   "user/register",
-  async (formData, thunkAPI) => {
+  async (formData, { rejectWithValue }) => {
     try {
       const response = await userService.register(formData);
-      console.log(response);
       return response;
     } catch (error) {
-      return thunkAPI.rejectWithValue(error);
+      return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
 );
@@ -30,10 +29,9 @@ export const login = createAsyncThunk(
 //create role
 export const createRole = createAsyncThunk(
   "user/createRole",
-  async (formData, thunkAPI) => {
+  async ({roleName, permissionIds }, thunkAPI) => {
     try {
-      const response = await userService.createRole(formData);
-      console.log(response);
+      const response = await userService.createRole({roleName, permissionIds });
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -70,7 +68,6 @@ export const getRoles = createAsyncThunk("user/getRoles", async (thunkAPI) => {
 export const getUsers = createAsyncThunk("user/getUsers", async (thunkAPI) => {
   try {
     const response = await userService.getUsers();
-    console.log(response);
     return response;
   } catch (error) {
     return thunkAPI.rejectWithValue(error);
@@ -82,6 +79,9 @@ const initialState = {
   user: null,
   loading: false,
   data: [],
+  permissions: [],
+  roles: [],
+  users: [],
   error: null,
   msg: null,
 };
@@ -132,48 +132,48 @@ const userSlice = createSlice({
             state.loading = true;
         })
         .addCase(getPermissions.fulfilled, (state, { payload }) => {
-            state.data = payload;
+            state.permissions = payload;
             state.error = null;
             state.loading = false;
         })
         .addCase(getPermissions.rejected, (state, { payload }) => {
             state.error = payload;
             state.loading = false;
-            state.data = null;
+            state.permissions = null;
         })
         .addCase(getPermissions.pending, (state) => {
             state.error = null;
-            state.data = null;
+            state.permissions = null;
             state.loading = true;
         })
         .addCase(getRoles.fulfilled, (state, { payload }) => {
-            state.data = payload;
+            state.roles = payload;
             state.error = null;
             state.loading = false;
         })
         .addCase(getRoles.rejected, (state, { payload }) => {
             state.error = payload;
             state.loading = false;
-            state.data = null;
+            state.roles = null;
         })
         .addCase(getRoles.pending, (state) => {
             state.error = null;
-            state.data = null;
+            state.roles = null;
             state.loading = true;
         })
         .addCase(getUsers.fulfilled, (state, { payload }) => {
-            state.data = payload;
+            state.users = payload;
             state.error = null;
             state.loading = false;
         })
         .addCase(getUsers.rejected, (state, { payload }) => {
             state.error = payload;
             state.loading = false;
-            state.data = null;
+            state.users = null;
         })
         .addCase(getUsers.pending, (state) => {
             state.error = null;
-            state.data = null;
+            state.users = null;
             state.loading = true;
         });
   },

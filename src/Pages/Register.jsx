@@ -5,8 +5,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import PizzaLogo from '../assets/pizza-logo.png'; 
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../slices/user.slice';
-import { useDispatch } from 'react-redux';
-import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 const registrationSchema = z.object({
   adminName: z.string().min(1, 'Admin Name is required'),
@@ -21,7 +20,7 @@ const registrationSchema = z.object({
 }).superRefine((values, ctx) => {
   if (values.password !== values.confirmPassword) {
     ctx.addIssue({
-      path: ['confirmPassword'], // point to the confirmPassword field
+      path: ['confirmPassword'],
       message: 'Passwords must match',
     });
   }
@@ -30,11 +29,9 @@ const registrationSchema = z.object({
 
 const validateWithZod = (values) => {
   try {
-    // Try to validate the values using Zod schema
     registrationSchema.parse(values);
-    return {}; // Return no errors if the validation passes
+    return {}; 
   } catch (err) {
-    // Check if the error contains an 'issues' array (Zod's validation errors)
     if (err instanceof z.ZodError && err.errors) {
       return err.errors.reduce((acc, issue) => {
         acc[issue.path[0]] = issue.message;
@@ -42,7 +39,6 @@ const validateWithZod = (values) => {
       }, {});
     }
     
-    // If the error is not from Zod or does not have errors array, return a general error
     console.error('Validation failed with an unexpected error:', err);
     return { general: 'Validation failed due to an unexpected error.' };
   }
@@ -50,14 +46,13 @@ const validateWithZod = (values) => {
 
 
 const Register = () => {
-  const [error, setError] = useState(null);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const error = useSelector((state) => state.user.error);
 
-  const handleSubmit = async (e, values) => {
-    e.preventDefault();
-      try {
-        if (values.terms) {
+  const handleSubmit = async (values) => {
+    try {
+      if (values.terms) {
         const formData = new FormData();
         formData.append('adminName', values.adminName);
         formData.append('email', values.email);
@@ -65,26 +60,23 @@ const Register = () => {
         formData.append('phoneNumber', values.phoneNumber);
         formData.append('restaurantName', values.restaurantName);
         formData.append('location', values.location);
-        formData.append('logo', values.logo); 
-
-        dispatch(register(formData))
-        .unwrap()
-        .then((response) => {
-          console.log(response);
-          navigate("/login");
-        })
+        formData.append('image', values.logo); 
+  
+        for (let [key, value] of formData.entries()) {
+          console.log(key, value);
         }
+  
+        dispatch(register(formData))
+          .unwrap()
+          .then(() => {
+            navigate("/login");
+          });
       }
-    catch(error)  {
-            if (error) {
-                console.log(error)
-                setError(error.message);
-                console.error('Error during registration:', error);
-            } else {
-        setError("Submission failed. Please try again later.");
-            }
-        };
-      }
+    } catch (error) {
+        console.log(error);
+    }
+  };
+  
 
   return (
     <Grid2 container>
@@ -98,7 +90,6 @@ const Register = () => {
       }}>
         <Avatar variant="square" src={PizzaLogo} sx={{ width: 305, height: 300 }} />
       </Grid2>
-      {error && <Typography variant='error'>{error}</Typography>}
       <Grid2 item size={6} 
       style={{
         padding: "80px",
@@ -130,7 +121,7 @@ const Register = () => {
                 Pizza 
                 </Typography>
                 </Grid2>
-
+                {error && <Typography color="error">{error}</Typography>}
               <Field
                 as={TextField}
                 fullWidth
@@ -434,42 +425,57 @@ const Register = () => {
               />
 
     <Button
-      variant="outlined" 
-      component="label"
-      startIcon={<CloudUploadIcon />}
-      style={{
-        width: '100%', 
-        height: "46px",
-        border: '1px dashed rgba(0, 0, 0, 0.23)', 
-        backgroundColor: 'transparent', 
-        color: '#FFA500', 
-        padding: '15px', 
-        marginTop: '0', 
-        marginBottom: '0', 
-        textTransform: 'none', 
-        cursor: 'pointer',
-      }}
-    >
-      Upload Logo
-      <input
-        type="file"
-        hidden
-        onChange={(event) => setFieldValue('logo', event.currentTarget.files[0])}
-      />
-    </Button>
-    {touched.logo && errors.logo && <Typography color="error">{errors.logo}</Typography>}
+  variant="outlined" 
+  component="label"
+  startIcon={<CloudUploadIcon />}
+  style={{
+    width: '100%', 
+    height: "46px",
+    border: '1px dashed rgba(0, 0, 0, 0.23)', 
+    backgroundColor: 'transparent', 
+    color: '#FFA500', 
+    padding: '15px', 
+    marginTop: '0', 
+    marginBottom: '0', 
+    textTransform: 'none', 
+    cursor: 'pointer',
+  }}
+>
+  Upload Logo
+  <input
+    type="file"
+    hidden
+    onChange={(event) => {
+      const file = event.currentTarget.files[0];
+      console.log(file); // Check if the file is correctly selected
+      setFieldValue('logo', file);  // Set the file to Formik state
+    }}
+  />
+</Button>
+{touched.logo && errors.logo && <Typography color="error">{errors.logo}</Typography>}
 
+
+    <Field
+  name="terms"
+>
+  {({ field, form }) => (
     <FormControlLabel
-      control={<Checkbox name="terms" color='primary'/>}
+      control={
+        <Checkbox
+          {...field}
+          checked={field.value}
+          onChange={(event) => form.setFieldValue('terms', event.target.checked)}
+          color="primary"
+        />
+      }
       label="I accept the Terms and Conditions"
       style={{
         marginTop: '0', 
         marginBottom: '0',
       }}
     />
-    {touched.terms && errors.terms && <Typography color="error">{errors.terms}</Typography>}
-
-
+  )}
+</Field>
               
               <Button
                 type="submit"

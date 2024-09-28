@@ -28,7 +28,7 @@ const ActiveSwitch = styled(Switch)(({ theme }) => ({
 const RoleTable = ({ roles, onActivate, onView, onDelete, handleOpen }) => {
   const columns = [
     {
-      accessorKey: 'roleName',
+      accessorKey: 'name',
       header: 'Role Name',
     },
     {

@@ -1,23 +1,20 @@
 import axios from "axios";
 axios.defaults.withCredentials = true;
-const API_URI = "http://localhost:8001";
+const API_URI = "http://localhost:8001/pizza";
 const register = formData => {
-  return axios.post(API_URI + "/register", formData, {
+  return axios.post(API_URI + "/registerSuperAdmin", formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
-    },
-    withCredentials: true
+    }
   }).then(response => {
     return response.data;
   }).catch(error => {
     if (error.response && error.response.status === 409) {
       // Handle conflict
-      console.error('Error:', error.response.data.message);
-      throw new Error(error.response.data.message);
+      throw new Error(error);
     } else {
       // Handle other errors
-      console.error('Error:', error.message);
-      throw new Error(error.response.data.message || 'An unexpected error occurred'); 
+      throw new Error(error || 'An unexpected error occurred'); 
     }
   });
 };
@@ -35,13 +32,22 @@ const login = async (email, password) => {
     });
 };
 
-const createRole = async (roleName, permissionIds) => {
+const createRole = async ({roleName, permissionIds }) => {
+  console.log({roleName, permissionIds })
     return axios.post(
-        API_URI + "/roles",
-        { roleName, permissionIds },
+        API_URI + "/createRole",
+         {roleName, permissionIds } ,
         { withCredentials: true }
     ).then(response => {
         return response.data;
+    }).catch(error => {
+      if (error.response && error.response.status === 409) {
+        // Handle conflict
+        throw new Error(error);
+      } else {
+        // Handle other errors
+        throw new Error(error || 'An unexpected error occurred'); 
+      }
     });
 }
 
@@ -55,6 +61,7 @@ const getPermissions = async () => {
 const getRoles = async () => {
     return axios.get(API_URI + "/roles", { withCredentials: true })
         .then(response => {
+          console.log(response);
             return response.data;
         });
 }

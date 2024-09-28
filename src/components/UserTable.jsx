@@ -32,7 +32,7 @@ const UserTable = ({ users, onActivate, onView, onDelete, handleOpen }) => {
       header: "Name",
     },
     {
-      accessorKey: "phone",
+      accessorKey: "phoneNumber",
       header: "Phone No",
     },
     {

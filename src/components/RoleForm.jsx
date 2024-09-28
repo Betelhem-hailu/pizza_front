@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Modal,
   Box,
@@ -10,6 +10,8 @@ import {
   Button,
   Grid2,
 } from "@mui/material";
+import { createRole, getPermissions } from "../slices/user.slice";
+import { useDispatch, useSelector } from "react-redux";
 
 const style = {
   position: "absolute",
@@ -26,19 +28,58 @@ const style = {
 };
 
 export default function RoleModal({ open, handleClose }) {
-  const [permissions, setPermissions] = useState({
-    updateOrderStatus: true,
-    seeOrders: true,
-    addUsers: true,
-    seeCustomers: true,
-    createRoles: false,
-  });
+  const dispatch = useDispatch();
+  const [roleName, setRoleName] = useState("");
+  const [permissionState, setPermissionState] = useState({});
 
+  // Get permissions from Redux store
+  const { permissions } = useSelector((state) => state.user);
+
+  // Fetch permissions when the modal opens
+  useEffect(() => {
+    if (open) {
+      dispatch(getPermissions());
+    }
+  }, [open, dispatch]);
+
+  // Update the state when permissions are fetched from the backend
+  useEffect(() => {
+    if (permissions) {
+      // Initialize permissions state based on available permissions
+      const permissionsState = permissions.reduce((acc, permission) => {
+        acc[permission.id] = false; // Set all permissions to false initially
+        return acc;
+      }, {});
+      setPermissionState(permissionsState);
+    }
+  }, [permissions]);
+
+  // Handle checkbox changes
   const handleChange = (event) => {
-    setPermissions({
-      ...permissions,
-      [event.target.name]: event.target.checked,
+    const { name, checked } = event.target;
+    setPermissionState((prevState) => ({
+      ...prevState,
+      [name]: checked,
+    }));
+  };
+
+  // Handle form submit
+  const handleSubmit = () => {
+    // Get selected permission IDs
+    const selectedPermissionIds = Object.keys(permissionState).filter(
+      (permId) => permissionState[permId] === true
+    );
+
+
+    // Dispatch the createRole action
+    dispatch(createRole({ roleName, permissionIds: selectedPermissionIds }))
+    .unwrap()
+    .then(() => {
+    console.log("success");
     });
+
+    // Close the modal after submission
+    handleClose();
   };
 
   return (
@@ -58,81 +99,49 @@ export default function RoleModal({ open, handleClose }) {
           >
             Role
           </Typography>
-          <TextField fullWidth label="Name" variant="outlined" sx={{ my: 2 }} />
+          <TextField
+            fullWidth
+            label="Name"
+            variant="outlined"
+            value={roleName}
+            onChange={(e) => setRoleName(e.target.value)}
+            sx={{ my: 2 }}
+          />
           <Typography variant="body1">Permissions</Typography>
           <FormGroup>
             <Grid2 container spacing={2}>
-                <Grid2 item xs={6} sx={{display: "flex", flexDirection: "column"}}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={permissions.updateOrderStatus}
-                        onChange={handleChange}
-                        name="updateOrderStatus"
-                        sx={{
-                          "&.Mui-checked": {
-                            color: "#FF8100",
-                          },
-                        }}
-                      />
-                    }
-                    label="Update Order Status"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={permissions.seeOrders}
-                        onChange={handleChange}
-                        name="seeOrders"
-                        sx={{
-                          "&.Mui-checked": {
-                            color: "#FF8100",
-                          },
-                        }}
-                      />
-                    }
-                    label="See Orders"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={permissions.addUsers}
-                        onChange={handleChange}
-                        name="addUsers"
-                      />
-                    }
-                    label="Add Users"
-                  />
-                </Grid2>
-                <Grid2 item xs={6} sx={{display: "flex", flexDirection: "column"}}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={permissions.seeCustomers}
-                        onChange={handleChange}
-                        name="seeCustomers"
-                      />
-                    }
-                    label="See Customers"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={permissions.createRoles}
-                        onChange={handleChange}
-                        name="createRoles"
-                      />
-                    }
-                    label="Create Roles"
-                  />
-                </Grid2>
-              </Grid2>
+              {permissions &&
+                permissions.map((permission) => (
+                  <Grid2 item xs={6} key={permission.id}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          checked={permissionState[permission.id] || false}
+                          onChange={handleChange}
+                          name={permission.id.toString()} // Use permission id as name to easily map
+                          sx={{
+                            "&.Mui-checked": {
+                              color: "#FF8100",
+                            },
+                          }}
+                        />
+                      }
+                      label={permission.name} // Assuming permission has a name
+                    />
+                  </Grid2>
+                ))}
+            </Grid2>
           </FormGroup>
           <Button
             variant="contained"
             fullWidth
-            sx={{ mt: "53px",width:"180px", alignContent: "center", backgroundColor: "#FF8100" }}
-            onClick={handleClose}
+            sx={{
+              mt: "53px",
+              width: "180px",
+              alignContent: "center",
+              backgroundColor: "#FF8100",
+            }}
+            onClick={handleSubmit}
           >
             Update
           </Button>

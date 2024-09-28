@@ -1,37 +1,40 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserForm, UserTable } from "../components";
 import { AdminLayout } from "../Layout";
+import { useDispatch, useSelector } from "react-redux";
+import { getUsers } from "../slices/user.slice";
 
 const UserPage = () => {
   const [open, setOpen] = useState(false);
-  const [users, setUsers] = useState([
-    {
-      id: 1,
-      name: "Abebe Bekele",
-      phone: "+251 1523654789",
-      email: "thisis@gmail.com",
-      isActive: true,
-    },
-  ]);
+ 
+
+  const {users} = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    if (!users.length) {
+      dispatch(getUsers());
+    }
+  }, [dispatch]);
+  
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
-  const handleActivate = (id) => {
-    setUsers((prevUsers) =>
-      prevUsers.map((user) =>
-        user.id === id ? { ...user, isActive: !user.isActive } : user
-      )
-    );
-  };
+  // const handleActivate = (id) => {
+  //   setUsers((prevUsers) =>
+  //     prevUsers.map((user) =>
+  //       user.id === id ? { ...user, isActive: !user.isActive } : user
+  //     )
+  //   );
+  // };
 
   const handleView = (id) => {
     console.log(`View details for user id: ${id}`);
   };
 
-  const handleDelete = (id) => {
-    setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
-  };
+  // const handleDelete = (id) => {
+  //   setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+  // };
 
   return (
     <AdminLayout>
@@ -39,9 +42,9 @@ const UserPage = () => {
         <UserTable
           users={users}
           handleOpen={handleOpen}
-          onActivate={handleActivate}
+          // onActivate={handleActivate}
           onView={handleView}
-          onDelete={handleDelete}
+          // onDelete={handleDelete}
         />
     </AdminLayout>
   );
