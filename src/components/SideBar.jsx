@@ -15,12 +15,15 @@ import MenuOpenOutlinedIcon from "@mui/icons-material/MenuOpenOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Sidebar = () => {
 const [activeIndex, setActiveIndex] = useState(null);
+const navigate = useNavigate();
 
-const handleListItemClick = (index) => {
+const handleListItemClick = (index, route) => {
 setActiveIndex(index);
+navigate(route);
 };
 return (
 <Box
@@ -65,7 +68,7 @@ return (
     <List style={{ padding: 2, margin: 0 }}>
     <ListItem
         button="true"
-        onClick={() => handleListItemClick(0)}
+        onClick={() => handleListItemClick(0, '/dashboard/orders')}
         sx={{
         borderRadius: "8px",
         borderLeft: activeIndex === 0 ? "4px solid #FF8100" : "none",
@@ -101,7 +104,7 @@ return (
     </ListItem>
     <ListItem
         button="true"
-        onClick={() => handleListItemClick(1)}
+        onClick={() => handleListItemClick(1, '/dashboard/addmenu')}
         sx={{
         borderRadius: "8px",
         borderLeft: activeIndex === 1 ? "4px solid #FF8100" : "none",
@@ -137,7 +140,7 @@ return (
     </ListItem>
     <ListItem
         button="true"
-        onClick={() => handleListItemClick(2)}
+        onClick={() => handleListItemClick(2, '/dashboard/roles')}
         sx={{
         borderRadius: "8px",
         borderLeft: activeIndex === 2 ? "4px solid #FF8100" : "none",
@@ -163,7 +166,7 @@ return (
     </ListItem>
     <ListItem
         button="true"
-        onClick={() => handleListItemClick(3)}
+        onClick={() => handleListItemClick(3, '/dashboard/users')}
         sx={{
         borderRadius: "8px",
         borderLeft: activeIndex === 3 ? "4px solid #FF8100" : "none",

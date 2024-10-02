@@ -2,15 +2,51 @@ import { Button, Checkbox, FormControlLabel, TextField, Typography, Avatar, Grid
 import { Formik, Form, Field } from 'formik';
 import { z } from 'zod';
 import PizzaLogo from '../assets/pizza-logo.png'; 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../slices/user.slice';
 
 const registrationSchema = z.object({
   email: z.string().email('Invalid email address').min(1, 'Email is required'),
   password: z.string().min(1, 'Password is required'),
 });
 
+const validateWithZod = (values) => {
+  try {
+    registrationSchema.parse(values);
+    return {}; 
+  } catch (err) {
+    if (err instanceof z.ZodError && err.errors) {
+      return err.errors.reduce((acc, issue) => {
+        acc[issue.path[0]] = issue.message;
+        return acc;
+      }, {});
+    }
+    
+    console.error('Validation failed with an unexpected error:', err);
+    return { general: 'Validation failed due to an unexpected error.' };
+  }
+};
 
 const Login = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const error = useSelector((state) => state.user.error);
+
+  const handleSubmit = async (values) => {
+    try {
+        const user = {email:values.email, password: values.password };
+  
+        dispatch(login(user))
+          .unwrap()
+          .then(() => {
+            navigate("/dashboard/orders");
+          });
+      
+    } catch (error) {
+        console.log(error);
+    }
+  };
 
   return (
     <Grid2 container>
@@ -35,21 +71,11 @@ const Login = () => {
       }}>
         <Formik
           initialValues={{
-            adminName: '',
             email: '',
-            password: '',
-            confirmPassword: '',
-            phoneNumber: '',
-            restaurantName: '',
-            location: '',
-            logo: null,
-            terms: false
+            password: ''
           }}
-          validationSchema={registrationSchema}
-          onSubmit={(values) => {
-            console.log(values);
-            // Implement registration logic here, e.g., API call
-          }}
+          validate={validateWithZod}
+          onSubmit={handleSubmit}
         >
           {({ errors, touched }) => (
             <Form>
@@ -59,7 +85,7 @@ const Login = () => {
                 Pizza 
                 </Typography>
                 </Grid2>
-
+                {error && <Typography color="error">{error}</Typography>}
               <Field
                 as={TextField}
                 fullWidth

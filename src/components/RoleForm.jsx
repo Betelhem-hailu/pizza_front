@@ -114,7 +114,7 @@ export default function RoleModal({ open, handleClose }) {
                         <Checkbox
                           checked={permissionState[permission.id] || false}
                           onChange={handleChange}
-                          name={permission.id.toString()} // Use permission id as name to easily map
+                          name={permission.id.toString()} 
                           sx={{
                             "&.Mui-checked": {
                               color: "#FF8100",
@@ -122,7 +122,7 @@ export default function RoleModal({ open, handleClose }) {
                           }}
                         />
                       }
-                      label={permission.name} // Assuming permission has a name
+                      label={permission.name} 
                     />
                   </Grid2>
                 ))}

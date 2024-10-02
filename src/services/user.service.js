@@ -24,8 +24,7 @@ const login = async (email, password) => {
   return axios
     .post(
       API_URI + "/login",
-      { email, password },
-      { withCredentials: true }
+      { email, password }
     )
     .then(response => {
       return response.data;
@@ -61,7 +60,6 @@ const getPermissions = async () => {
 const getRoles = async () => {
     return axios.get(API_URI + "/roles", { withCredentials: true })
         .then(response => {
-          console.log(response);
             return response.data;
         });
 }

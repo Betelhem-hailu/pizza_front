@@ -16,6 +16,7 @@ const UserPage = () => {
     }
   }, [dispatch]);
   
+  console.log(users);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);

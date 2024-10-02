@@ -57,7 +57,6 @@ export const getPermissions = createAsyncThunk(
 export const getRoles = createAsyncThunk("user/getRoles", async (thunkAPI) => {
   try {
     const response = await userService.getRoles();
-    console.log(response);
     return response;
   } catch (error) {
     return thunkAPI.rejectWithValue(error);
@@ -76,7 +75,10 @@ export const getUsers = createAsyncThunk("user/getUsers", async (thunkAPI) => {
 
 const initialState = {
   isLoggedIn: false,
-  user: null,
+  user: 
+  typeof window !== "undefined" && localStorage.getItem("userInfo")
+    ? JSON.parse(localStorage.getItem("userInfo"))
+    : null,
   loading: false,
   data: [],
   permissions: [],
@@ -105,6 +107,9 @@ const userSlice = createSlice({
         state.loading = false;
         state.user = payload.data;
         state.error = null;
+        if (typeof window !== "undefined") {
+          localStorage.setItem("userInfo", JSON.stringify(payload.data));
+        }
       })
       .addCase(login.pending, (state) => {
         state.loading = true;
