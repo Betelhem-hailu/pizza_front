@@ -9,8 +9,12 @@ import {
   Button,
   Grid,
   Typography,
+  Dialog,
+  DialogContent,
+  IconButton,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { AdminLayout } from "../Layout";
 import { useDispatch, useSelector } from "react-redux";
 import { createMenu, fetchToppings } from "../slices/menu.slice";
@@ -32,6 +36,8 @@ const AddMenu = () => {
   const { toppings } = useSelector((state) => state.menu);
   const [showNewToppingInput, setShowNewToppingInput] = useState(false);
   const [newToppingName, setNewToppingName] = useState("");
+  const [open, setOpen] = useState(false);
+  const handleClose = () => setOpen(false);
 
   useEffect(() => {
     dispatch(fetchToppings());
@@ -42,6 +48,7 @@ const AddMenu = () => {
     formData.append("name", values.name);
     formData.append("price", values.price);
     formData.append("toppings", JSON.stringify(values.toppings));
+
     formData.append("image", values.image);
 
     for (let [key, value] of formData.entries()) {
@@ -51,7 +58,7 @@ const AddMenu = () => {
     dispatch(createMenu(formData))
       .unwrap()
       .then(() => {
-       
+        setOpen(true); 
       })
       .catch((error) => {
         console.log("Menu creation failed:", error);
@@ -285,6 +292,45 @@ const AddMenu = () => {
             </Form>
           )}
         </Formik>
+        <Dialog open={open} onClose={handleClose} PaperProps={{
+    sx: {
+      borderRadius: "20px", 
+      width: "800px",
+      height: "500px",
+    },
+  }}>
+      <DialogContent>
+         <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '20px',
+            textAlign: 'center',
+          }}
+        >
+          <IconButton
+            sx={{
+              width: '280px',
+              height: '280px',
+              backgroundColor: '#E8F5E9',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '20px',
+            }}
+            disableRipple
+          >
+            <CheckCircleIcon sx={{ color: '#01C550', fontSize: '150px' }} />
+          </IconButton>
+          <Typography variant="h6" sx={{ color: '#01C550', fontWeight: 'bold', fontSize: "32px" }}>
+          Your have uploaded the Pizza successfully.
+          </Typography>
+        </Box>
+      </DialogContent>
+      </Dialog>
       </Box>
     </AdminLayout>
   );

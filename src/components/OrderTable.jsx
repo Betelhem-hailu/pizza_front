@@ -14,39 +14,41 @@ import {
   Typography,
 } from "@mui/material";
 import moment from "moment";
-import { useDispatch } from "react-redux";
-import { updateOrderInSlice, updateOrderStatus } from "../slices/order.slice";
+import { useDispatch, useSelector } from "react-redux";
+import { clearState, getOrders, updateOrderStatus } from "../slices/order.slice";
 
-const OrdersTable = ({data }) => {
+const OrdersTable = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedToppings, setSelectedToppings] = useState([]);
   const [pizzaName, setPizzaName] = useState("");
+  // const [status, setSelectedStatus] = useState("");
   const [quantity, setQuantity] = useState(0);
   const dispatch = useDispatch();
-console.log(data);
-  const handleStatusChange = async (orderId, status) => {
-    try {
-       dispatch(updateOrderStatus(orderId, status)).then((res)=>{
-        
-      console.log('Status updated successfully:', res);
-        dispatch(updateOrderInSlice({ orderId, status }));
+  const {orders, message} = useSelector((state) => state.order);
 
-       })
-    } catch (error) {
-      console.error('Error updating status:', error);
+useEffect(()=>{
+  dispatch(getOrders());
+},[dispatch, message])
+
+const data = orders.map(order => ({
+  orderId: order.orderId,
+  createdAt: order.createdAt,
+  status: order.status,
+  customerPhoneNumber: order.customerPhoneNumber,
+  quantity: order.orderItems[0].quantity,
+  pizzaName: order.orderItems[0].pizzaName,
+  toppings: order.orderItems[0].toppings,
+}));
+
+  const handleStatusChange = async (orderId, newStatus) => {
+    try {
+      // setSelectedStatus(newStatus);
+      dispatch(updateOrderStatus({orderId, status: newStatus })).then((res)=>{ console.log(res); });
+    } catch (err) {
+      dispatch(clearState());
+      console.error(err);
     }
   };
-
-  // const handleStatusChange = async (event) => {
-  //   const newStatus = event.target.value;
-  //   try {
-  //     setSelectedStatus(newStatus); // Optimistically update the UI with the new status
-  //     dispatch(updateOrderStatus({orderId, status: newStatus })).then((res)=>{ }); // API call to update status
-  //   } catch (err) {
-  //     setError('Failed to update status');
-  //     console.error(err);
-  //   }
-  // };
 
   const handleSetToppings = (toppingsString) => {
     const toppingsArray = toppingsString.split(',').map((t) => t.trim());
@@ -66,7 +68,6 @@ console.log(data);
     }
   }, [selectedToppings, modalOpen]);
 
-  console.log(selectedToppings);
   const handleClose = () => {
     setModalOpen(false);
   };
@@ -122,9 +123,10 @@ console.log(data);
             <Typography>Delivered</Typography>
           ) : (
             <Select
-              value={cell.getValue()}
+              // value={cell.getValue()}
+              value={cell.getValue() || row.original.status}
               onChange={(e) =>
-                handleStatusChange(row.original.id, e.target.value)
+                handleStatusChange(row.original.orderId, e.target.value)
               }
               displayEmpty
               fullWidth
@@ -142,9 +144,9 @@ console.log(data);
               <MenuItem value={row.original.status}>
                 {row.original.status}
               </MenuItem>
-              <MenuItem value="Preparing">Preparing</MenuItem>
-              <MenuItem value="Ready">Ready</MenuItem>
-              <MenuItem value="Delivered">Delivered</MenuItem>
+              <MenuItem value="preparing">Preparing</MenuItem>
+              <MenuItem value="ready">Ready</MenuItem>
+              <MenuItem value="delivered">Delivered</MenuItem>
             </Select>
           ),
       },

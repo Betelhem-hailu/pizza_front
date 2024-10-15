@@ -4,7 +4,7 @@ const API_URI = "http://localhost:8001/pizza";
 
 //get order
 const getOrders = async () => {
-    return axios.get(API_URI + "/getorders", { withCredentials: true })
+    return axios.get(API_URI + "/orders", { withCredentials: true })
         .then(response => {
             return response.data;
         });

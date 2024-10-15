@@ -19,10 +19,12 @@ export const getOrders = createAsyncThunk(
 export const updateOrderStatus = createAsyncThunk(
   "order/updateOrderStatus",
   async ({ orderId, status }, { rejectWithValue }) => {
+    console.log(orderId)
     try {
       const response = await orderService.updateOrderStatus(orderId, status);
       return response;
     } catch (error) {
+      console.log(error);
       return rejectWithValue(error.response?.data?.message || error.message);
     }
   }
@@ -32,18 +34,15 @@ const initialState = {
   orders: [],
   loading: false,
   error: null,
+  message: null,
 };
 
 const orderSlice = createSlice({
   name: 'order',
   initialState,
   reducers: {
-    updateOrderInSlice: (state, action) => {
-      const { orderId, newStatus } = action.payload;
-      const order = state.orders.find((order) => order.id === orderId);
-      if (order) {
-        order.status = newStatus;
-      }
+    clearState: () => {
+      return initialState; 
     },
   },
   extraReducers: (builder) => {
@@ -64,8 +63,9 @@ const orderSlice = createSlice({
         state.loading = true;
         state.error = null; 
       })
-      .addCase(updateOrderStatus.fulfilled, (state) => {
+      .addCase(updateOrderStatus.fulfilled, (state, payload) => {
         state.loading = false;
+        state.message = payload;
       })
       .addCase(updateOrderStatus.rejected, (state, action) => {
         state.loading = false;
@@ -74,5 +74,5 @@ const orderSlice = createSlice({
   }
 });
 
-export const { updateOrderInSlice } = orderSlice.actions;
+export const { clearState } = orderSlice.actions;
 export default orderSlice.reducer;
