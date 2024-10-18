@@ -44,7 +44,6 @@ const OrdersTable = () => {
   const statusOptions = ["delivered", "ready", "preparing", "pending"];
 
 useEffect(()=>{
-  console.log(filter);
   dispatch(getOrders(filter));
 },[dispatch, message, filter])
 
@@ -126,11 +125,10 @@ const handleInputClick = (event) => {
     setModalOpen(true);
   };
 
-  useEffect(() => {
-    if (modalOpen) {
-      console.log(selectedToppings);
-    }
-  }, [selectedToppings, modalOpen]);
+  // useEffect(() => {
+  //   if (modalOpen) {
+  //   }
+  // }, [selectedToppings, modalOpen]);
 
   const handleClose = () => {
     setModalOpen(false);

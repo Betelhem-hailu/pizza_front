@@ -20,7 +20,6 @@ const register = formData => {
 };
 
 const registerAdmin = formData => {
-  console.log(formData);
   return axios.post(API_URI + "/registerAdmin", formData).then(response => {
     return response.data;
   }).catch(error => {
@@ -47,7 +46,6 @@ const login = async (email, password) => {
 };
 
 const createRole = async ({roleName, permissionIds }) => {
-  console.log({roleName, permissionIds })
     return axios.post(
         API_URI + "/createRole",
          {roleName, permissionIds } ,
@@ -73,14 +71,20 @@ const getPermissions = async () => {
 }
 
 const getRoles = async () => {
-    return axios.get(API_URI + "/roles", { withCredentials: true })
+    return axios.get(API_URI + `/roles`, { withCredentials: true })
         .then(response => {
             return response.data;
         });
 }
 
-const getUsers = async () => {
-    return axios.get(API_URI + "/users", { withCredentials: true})
+const getUsers = async (filter) => {
+  const params = new URLSearchParams();
+
+  if (filter.search) params.append("searchTerm", filter.search);
+  if (filter.status) params.append("roleName", filter.status);
+
+  const queryString = params.toString();
+    return axios.get(API_URI + `/users?${queryString}`, { withCredentials: true})
     .then(response => {
         return response.data;
     })

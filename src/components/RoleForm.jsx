@@ -71,7 +71,6 @@ export default function RoleModal({ open, handleClose }) {
     dispatch(createRole({ roleName, permissionIds: selectedPermissionIds }))
     .unwrap()
     .then(() => {
-    console.log("success");
     });
 
     // Close the modal after submission

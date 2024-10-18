@@ -30,7 +30,6 @@ export const login = createAsyncThunk(
   async ({ email, password }, thunkAPI) => {
     try {
       const data = await userService.login(email, password);
-      console.log(data);
       return { data };
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -57,7 +56,6 @@ export const getPermissions = createAsyncThunk(
   async (thunkAPI) => {
     try {
       const response = await userService.getPermissions();
-      console.log(response);
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -76,9 +74,9 @@ export const getRoles = createAsyncThunk("user/getRoles", async (thunkAPI) => {
 });
 
 //get users
-export const getUsers = createAsyncThunk("user/getUsers", async (thunkAPI) => {
+export const getUsers = createAsyncThunk("user/getUsers", async (filter,thunkAPI) => {
   try {
-    const response = await userService.getUsers();
+    const response = await userService.getUsers(filter);
     return response;
   } catch (error) {
     return thunkAPI.rejectWithValue(error);

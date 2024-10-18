@@ -66,7 +66,6 @@ const UserForm = ({ open, handleClose }) => {
     dispatch(registerAdmin(userData))
     .unwrap()
     .then(() => {
-    console.log("success");
     });
 
     // Close the modal after submission

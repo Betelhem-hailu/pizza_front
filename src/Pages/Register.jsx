@@ -62,10 +62,6 @@ const Register = () => {
         formData.append('location', values.location);
         formData.append('image', values.logo); 
   
-        for (let [key, value] of formData.entries()) {
-          console.log(key, value);
-        }
-  
         dispatch(register(formData))
           .unwrap()
           .then(() => {
@@ -447,8 +443,7 @@ const Register = () => {
     hidden
     onChange={(event) => {
       const file = event.currentTarget.files[0];
-      console.log(file); // Check if the file is correctly selected
-      setFieldValue('logo', file);  // Set the file to Formik state
+      setFieldValue('logo', file);
     }}
   />
 </Button>

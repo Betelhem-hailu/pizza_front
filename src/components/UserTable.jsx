@@ -1,8 +1,8 @@
 import { MaterialReactTable } from "material-react-table";
-import { alpha, Box, Button, IconButton, styled, Switch, Typography } from "@mui/material";
+import { alpha, Box, IconButton, styled, Switch, Typography } from "@mui/material";
 import { Visibility, Delete } from "@mui/icons-material";
-import { mkConfig, generateCsv, download } from 'export-to-csv';
-import FileDownloadIcon from "@mui/icons-material/FileDownload";
+// import { mkConfig, generateCsv, download } from 'export-to-csv';
+// import FileDownloadIcon from "@mui/icons-material/FileDownload";
 
 const ActiveSwitch = styled(Switch)(({ theme }) => ({
   "& .MuiSwitch-switchBase.Mui-checked": {
@@ -25,7 +25,7 @@ const ActiveSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-const UserTable = ({ users, onActivate, onView, onDelete, handleOpen }) => {
+const UserTable = ({ users, onActivate, onView, onDelete, handleSearch, renderTopToolbarCustomActions }) => {
   const columns = [
     {
       accessorKey: "name",
@@ -75,39 +75,34 @@ const UserTable = ({ users, onActivate, onView, onDelete, handleOpen }) => {
     },
   ];
 
-  const csvConfig = mkConfig({
-    fieldSeparator: ',',
-    decimalSeparator: '.',
-    useKeysAsHeaders: true,
-  });
+  // const csvConfig = mkConfig({
+  //   fieldSeparator: ',',
+  //   decimalSeparator: '.',
+  //   useKeysAsHeaders: true,
+  // });
 
-  const handleExportData = () => {
-    const csv = generateCsv(csvConfig)(users);
-    download(csvConfig)(csv);
+  // const handleExportData = () => {
+  //   const csv = generateCsv(csvConfig)(users);
+  //   download(csvConfig)(csv);
+  // };
+  const tableOptions = {
+    manualFiltering: true, 
+    manualPagination: true, 
+    manualSorting: false, 
+    enableRowActions: false,
+    enableGlobalFilter: true, 
+    enableColumnFilters: false,
   };
 
   return (
     <MaterialReactTable
       columns={columns}
       data={users}
+      {...tableOptions}
       enablePagination={false}
       sx={{ boxShadow: "0 2px 5px rgba(0, 0, 0, 0.2)" }}
-      renderTopToolbarCustomActions={() => (
-        <Box sx={{ display: "flex", gap: "16px", padding: "8px" }}>
-            <Button
-        variant="contained"
-        sx={{ mb: 3, backgroundColor: "#FF8100", boxShadow: "none" }}
-        onClick={handleOpen}
-      >
-        Add User
-      </Button>
-      <Button
-        onClick={handleExportData}
-        startIcon={<FileDownloadIcon />}
-      >
-      </Button>
-        </Box>
-      )}
+      onGlobalFilterChange={(value) => handleSearch(value)}
+      renderTopToolbarCustomActions={renderTopToolbarCustomActions}
     />
   );
 };

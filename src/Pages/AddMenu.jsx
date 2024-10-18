@@ -51,9 +51,6 @@ const AddMenu = () => {
 
     formData.append("image", values.image);
 
-    for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
 
     dispatch(createMenu(formData))
       .unwrap()
