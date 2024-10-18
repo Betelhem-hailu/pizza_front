@@ -70,8 +70,11 @@ const getPermissions = async () => {
         });
 }
 
-const getRoles = async () => {
-    return axios.get(API_URI + `/roles`, { withCredentials: true })
+const getRoles = async (search) => {
+  const params = new URLSearchParams();
+  if (search) params.append("searchTerm", search)
+    const queryString = params.toString();
+    return axios.get(API_URI + `/roles?${queryString}`, { withCredentials: true })
         .then(response => {
             return response.data;
         });

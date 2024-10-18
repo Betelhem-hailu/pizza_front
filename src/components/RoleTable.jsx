@@ -1,8 +1,8 @@
 import {MaterialReactTable} from 'material-react-table';
 import { styled, alpha, Box, Button, IconButton, Switch, Typography } from '@mui/material';
 import { Visibility, Delete } from '@mui/icons-material';
-import { mkConfig, generateCsv, download } from 'export-to-csv';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
+// import { mkConfig, generateCsv, download } from 'export-to-csv';
+// import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
 const ActiveSwitch = styled(Switch)(({ theme }) => ({
   '& .MuiSwitch-switchBase.Mui-checked': {
@@ -25,7 +25,7 @@ const ActiveSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
-const RoleTable = ({ roles, onActivate, onView, onDelete, handleOpen }) => {
+const RoleTable = ({ roles, onActivate, onView, onDelete, handleOpen, handleSearch }) => {
   const columns = [
     {
       accessorKey: 'name',
@@ -72,16 +72,16 @@ const RoleTable = ({ roles, onActivate, onView, onDelete, handleOpen }) => {
     },
   ];
 
-  const csvConfig = mkConfig({
-    fieldSeparator: ',',
-    decimalSeparator: '.',
-    useKeysAsHeaders: true,
-  });
+  // const csvConfig = mkConfig({
+  //   fieldSeparator: ',',
+  //   decimalSeparator: '.',
+  //   useKeysAsHeaders: true,
+  // });
 
-  const handleExportData = () => {
-    const csv = generateCsv(csvConfig)(roles);
-    download(csvConfig)(csv);
-  };
+  // const handleExportData = () => {
+  //   const csv = generateCsv(csvConfig)(roles);
+  //   download(csvConfig)(csv);
+  // };
 
   const renderTopToolbarCustomActions = () => (
     <Box
@@ -89,18 +89,16 @@ const RoleTable = ({ roles, onActivate, onView, onDelete, handleOpen }) => {
         display: 'flex',
         gap: '16px',
         padding: '8px',
-        flexWrap: 'wrap',
-        width: '100%',
       }}
     >
       <Button type="submit" variant="contained" sx={{backgroundColor:"#FF8100", boxShadow: "none"}} onClick={handleOpen}>
         Add Role
       </Button>
-      <Button
+      {/* <Button
         onClick={handleExportData}
         startIcon={<FileDownloadIcon />}
       >
-      </Button>
+      </Button> */}
     </Box>
   );
 
@@ -109,6 +107,7 @@ const RoleTable = ({ roles, onActivate, onView, onDelete, handleOpen }) => {
     sx={{ boxShadow: '0 2px 5px rgba(0, 0, 0, 0.2)'}}
       columns={columns}
       data={roles}
+      onGlobalFilterChange={(value) => handleSearch(value)}
       renderTopToolbarCustomActions={renderTopToolbarCustomActions}
       enablePagination={false}
     />

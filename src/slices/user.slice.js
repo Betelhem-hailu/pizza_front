@@ -64,9 +64,9 @@ export const getPermissions = createAsyncThunk(
 );
 
 //get roles
-export const getRoles = createAsyncThunk("user/getRoles", async (thunkAPI) => {
+export const getRoles = createAsyncThunk("user/getRoles", async (search,thunkAPI) => {
   try {
-    const response = await userService.getRoles();
+    const response = await userService.getRoles(search);
     return response;
   } catch (error) {
     return thunkAPI.rejectWithValue(error);
@@ -177,7 +177,7 @@ const userSlice = createSlice({
         .addCase(getRoles.rejected, (state, { payload }) => {
             state.error = payload;
             state.loading = false;
-            state.roles = null;
+            state.roles = [];
         })
         .addCase(getRoles.pending, (state) => {
             state.error = null;
@@ -196,7 +196,7 @@ const userSlice = createSlice({
         })
         .addCase(getUsers.pending, (state) => {
             state.error = null;
-            state.users = null;
+            state.users = [];
             state.loading = true;
         });
   },
