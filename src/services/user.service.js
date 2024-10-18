@@ -19,6 +19,21 @@ const register = formData => {
   });
 };
 
+const registerAdmin = formData => {
+  console.log(formData);
+  return axios.post(API_URI + "/registerAdmin", formData).then(response => {
+    return response.data;
+  }).catch(error => {
+    if (error.response && error.response.status === 409) {
+      // Handle conflict
+      throw new Error(error);
+    } else {
+      // Handle other errors
+      throw new Error(error || 'An unexpected error occurred'); 
+    }
+  });
+};
+
 
 const login = async (email, password) => {
   return axios
@@ -74,6 +89,7 @@ const getUsers = async () => {
 
 const userService = {
   register,
+  registerAdmin,
   login,
   createRole,
   getPermissions,

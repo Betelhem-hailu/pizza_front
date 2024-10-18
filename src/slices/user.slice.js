@@ -13,6 +13,18 @@ export const register = createAsyncThunk(
   }
 );
 
+export const registerAdmin = createAsyncThunk(
+  "user/registerAdmin",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const response = await userService.registerAdmin(formData);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
 export const login = createAsyncThunk(
   "user/login",
   async ({ email, password }, thunkAPI) => {
@@ -99,6 +111,14 @@ const userSlice = createSlice({
         state.msg = payload.data;
       })
       .addCase(register.rejected, (state, { payload }) => {
+        state.isLoggedIn = false;
+        state.error = payload;
+      })
+      .addCase(registerAdmin.fulfilled, (state, { payload }) => {
+        state.isLoggedIn = false;
+        state.msg = payload.data;
+      })
+      .addCase(registerAdmin.rejected, (state, { payload }) => {
         state.isLoggedIn = false;
         state.error = payload;
       })

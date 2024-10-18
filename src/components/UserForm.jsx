@@ -11,7 +11,7 @@ import {
   Grid,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../slices/user.slice";
+import { getRoles, registerAdmin } from "../slices/user.slice";
 
 const style = {
   position: "absolute",
@@ -32,8 +32,8 @@ const UserForm = ({ open, handleClose }) => {
     name: "",
     email: "",
     location: "",
-    phoneNumber1: "",
-    phoneNumber2: "",
+    phoneNumber: "",
+    password: "",
     role: "",
   });
   const dispatch = useDispatch();
@@ -53,12 +53,21 @@ const UserForm = ({ open, handleClose }) => {
     });
   };
 
+  const userData = {
+    name: formData.name,
+    email: formData.email,
+    location: formData.location,
+    phoneNumber: formData.phoneNumber,
+    password: formData.password,
+    roleName: formData.role,
+  }
+
   const handleSubmit = () => {
-    // dispatch(createRole({ roleName, permissionIds: selectedPermissionIds }))
-    // .unwrap()
-    // .then(() => {
-    // console.log("success");
-    // });
+    dispatch(registerAdmin(userData))
+    .unwrap()
+    .then(() => {
+    console.log("success");
+    });
 
     // Close the modal after submission
     handleClose();
@@ -103,18 +112,18 @@ const UserForm = ({ open, handleClose }) => {
           fullWidth
           margin="normal"
           label="Phone Number"
-          name="phoneNumber1"
+          name="phoneNumber"
           height="30px"
-          value={formData.phoneNumber1}
+          value={formData.phoneNumber}
           onChange={handleChange}
         />
         <TextField
           fullWidth
           margin="normal"
-          label="Phone Number"
-          name="phoneNumber2"
+          label="password"
+          name="password"
           height="30px"
-          value={formData.phoneNumber2}
+          value={formData.password}
           onChange={handleChange}
         />
         <Grid

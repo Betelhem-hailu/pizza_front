@@ -5,9 +5,9 @@ import orderService from "../services/order.service";
 //get orders
 export const getOrders = createAsyncThunk(
   "order/getOrders",
-  async (thunkAPI) => {
+  async (filter, thunkAPI) => {
     try {
-      const response = await orderService.getOrders();
+      const response = await orderService.getOrders(filter);
       return response;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -57,7 +57,8 @@ const orderSlice = createSlice({
       })
       .addCase(getOrders.rejected, (state, payload) => {
         state.loading = false;
-        state.error = payload;
+        state.orders = [];
+        state.error = payload.data;
       })
       .addCase(updateOrderStatus.pending, (state) => {
         state.loading = true;
